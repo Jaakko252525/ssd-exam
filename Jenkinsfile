@@ -10,6 +10,7 @@ pipeline {
                     -o './'
                     -s './'
                     -f 'ALL' 
+                    --disableNvd
                     --prettyPrint''', 
                     odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
 
