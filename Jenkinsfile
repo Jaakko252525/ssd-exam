@@ -2,19 +2,15 @@ pipeline {
     agent any
 
     stages {
-        // OWASP Dependency-Check Vulnerabilities Stage - Run before the app
+
         stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
-                // Run the OWASP Dependency-Check scan with additional arguments
                 dependencyCheck additionalArguments: ''' 
                     -o './'
                     -s './'
                     -f 'ALL' 
-                    --disableNvd
-                    --prettyPrint''', 
-                    odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
 
-                // Publish the Dependency-Check report
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
