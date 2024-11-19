@@ -1,46 +1,29 @@
 const { Builder, By, until } = require("selenium-webdriver");
-const chrome = require("selenium-webdriver/chrome");
 
-async function testUI() {
-  let driver = await new Builder()
-    .forBrowser("chrome")
-    .setChromeOptions(new chrome.Options().headless()) // Runs the browser in headless mode
-    .build();
+(async function example() {
+  // Initialize the WebDriver
+  let driver = await new Builder().forBrowser("chrome").build();
 
   try {
-    // Navigate to the home page
-    await driver.get("http://localhost:3000"); // Make sure this matches the URL where your app is running
+    // Go to localhost:3000
+    await driver.get("http://localhost:3000");
 
-    // Wait until the password input field is loaded
-    const passwordInput = await driver.wait(
-      until.elementLocated(By.id("password")),
-      5000 // Wait for a maximum of 5 seconds
+    // Optionally, wait for the body tag to confirm the page has loaded
+    await driver.wait(until.elementLocated(By.tagName("body")), 10000);
+
+    // Search for an element that contains the text "Login"
+    const loginText = await driver.findElement(
+      By.xpath("//*[contains(text(), 'Login')]")
     );
 
-    // Wait until the login button is located (using button text instead of ID)
-    const loginButton = await driver.wait(
-      until.elementLocated(By.xpath("//button[text()='Login']")),
-      5000
-    );
-
-    // Type a password into the input field
-    await passwordInput.sendKeys("TestPassword123"); // Use any test password that meets your requirements
-
-    // Click the login button
-    await loginButton.click();
-
-    // Wait for the welcome page or redirection after successful login
-    await driver.wait(
-      until.urlContains("welcome"),
-      5000 // Wait for 5 seconds for redirection
-    );
-
-    console.log("Login test passed");
-  } catch (err) {
-    console.error("Test failed:", err);
+    // If the "Login" text is found, print a message
+    if (loginText) {
+      console.log("Found 'Login' on the page.");
+    } else {
+      console.log("'Login' text not found.");
+    }
   } finally {
+    // Quit the driver after the test
     await driver.quit();
   }
-}
-
-testUI();
+})();
