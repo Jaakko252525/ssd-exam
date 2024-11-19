@@ -38,8 +38,15 @@ pipeline {
 
         stage('Run App') {
             steps {
-                // Run the application
-                sh 'node app.js'
+                // Start the application in the background
+                sh 'node app.js &'
+            }
+        }
+
+        stage('Run UI Tests') {
+            steps {
+                // Run the UI tests after app.js has started
+                sh 'node ui-test.js'
             }
         }
     }
