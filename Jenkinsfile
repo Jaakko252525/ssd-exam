@@ -2,6 +2,22 @@ pipeline {
     agent any
 
     stages {
+        // OWASP Dependency-Check Vulnerabilities Stage - Run before the app
+        stage('OWASP Dependency-Check Vulnerabilities') {
+            steps {
+                // Run the OWASP Dependency-Check scan with additional arguments
+                dependencyCheck additionalArguments: ''' 
+                    -o './'
+                    -s './'
+                    -f 'ALL' 
+                    --prettyPrint''', 
+                    odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+
+                // Publish the Dependency-Check report
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
+
         stage('Setup Environment') {
             steps {
                 // Install Node.js if not already available
@@ -27,22 +43,6 @@ pipeline {
             steps {
                 // Run the application
                 sh 'node app.js'
-            }
-        }
-
-        // Add the OWASP Dependency-Check Vulnerabilities Stage
-        stage('OWASP Dependency-Check Vulnerabilities') {
-            steps {
-                // Run the OWASP Dependency-Check scan with additional arguments
-                dependencyCheck additionalArguments: ''' 
-                    -o './'
-                    -s './'
-                    -f 'ALL' 
-                    --prettyPrint''', 
-                    odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-
-                // Publish the Dependency-Check report
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
     }
